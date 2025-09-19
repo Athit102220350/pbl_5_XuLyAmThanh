@@ -58,7 +58,7 @@ project/
 ├── processtrainsignal.py
 ├── testsignal.py
 └── audio_dataset/
-    ├── voice/
+    ├── turn_on/
     │   └── file1.wav
-    └── background_noise/
+    └── turn_off/
         └── file2.wav
