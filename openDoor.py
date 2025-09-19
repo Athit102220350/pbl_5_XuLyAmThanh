@@ -1,3 +1,5 @@
+""""
+
 import speech_recognition as sr
 
 # Khởi tạo recognizer
@@ -25,3 +27,5 @@ except sr.UnknownValueError:
 except sr.RequestError:
     print("❌ Không kết nối được API Google.")
 open
+
+"""

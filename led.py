@@ -1,3 +1,4 @@
+"""
 import serial
 import speech_recognition as sr
 
@@ -24,3 +25,4 @@ while True:
             print("Lệnh không hợp lệ.")
     except:
         print(" ko nhan dien duoc. ")
+"""
