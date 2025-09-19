@@ -50,3 +50,15 @@ Training Model
 ป้อน voice และ background_noise ให้โมเดลเรียนรู้ว่า เสียงแบบไหนคือเสียงสั่งงาน และเสียงแบบไหนคือ noise
 
 โมเดลจะเรียนรู้ pattern ของเสียงพูด เช่น ความถี่ของเสียงพูดมนุษย์ ต่างจากเสียงรบกวน
+
+
+
+# project structure
+project/
+├── processtrainsignal.py
+├── testsignal.py
+└── audio_dataset/
+    ├── voice/
+    │   └── file1.wav
+    └── background_noise/
+        └── file2.wav
