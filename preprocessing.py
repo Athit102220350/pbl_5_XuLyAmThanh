@@ -1,99 +1,72 @@
-# preprocessing_with_augmentation.py
 import os
-import numpy as np
 import librosa
-from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import train_test_split
+import numpy as np
+import pickle
 
-DATASET_PATH = "data"   # thư mục chứa các folder con (mỗi folder = 1 label)
-OUTPUT_FEATURES = "features.npy"
-OUTPUT_LABELS = "labels.npy"
+# ==== Cấu hình ====
+data_dir = r"C:\Users\souva\OneDrive\Documents\DUT_PROJECT\PBL5-TEST\data_train"
+save_dir = r"C:\Users\souva\OneDrive\Documents\DUT_PROJECT\PBL5-TEST\features"
 
-# ---- Hàm tăng cường dữ liệu ----
-def add_noise(data, noise_factor=0.005):
-    noise = np.random.randn(len(data))
-    return data + noise_factor * noise
+SR = 16000           # Tần số mẫu (Hz)
+N_MFCC = 13          # Số lượng MFCC
+MAX_DURATION = 3.0   # Thời lượng tối đa (giây) muốn chuẩn hóa
+MAX_LEN = int(SR * MAX_DURATION)  # Tổng số mẫu tương ứng
 
-def shift_time(data, shift_max=0.2):
-    shift = int(np.random.uniform(-shift_max, shift_max) * len(data))
-    return np.roll(data, shift)
+# ==== Hàm chuẩn hóa độ dài + trích đặc trưng ====
+def extract_features(file_path):
+    # Đọc file
+    y, sr = librosa.load(file_path, sr=SR)
+    
+    # Chuẩn hóa độ dài
+    if len(y) > MAX_LEN:
+        y = y[:MAX_LEN]  # Cắt nếu dài hơn
+    else:
+        y = np.pad(y, (0, max(0, MAX_LEN - len(y))))  # Đệm 0 nếu ngắn hơn
+    
+    # Trích xuất MFCC
+    mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=N_MFCC)
+    
+    # Lấy trung bình theo trục thời gian
+    mfcc_mean = np.mean(mfcc.T, axis=0)
+    return mfcc_mean
 
-def change_pitch(data, sr, n_steps=2):
-    return librosa.effects.pitch_shift(y=data, sr=sr, n_steps=n_steps)
-
-def change_speed(data, speed_factor=1.2):
-    return librosa.effects.time_stretch(y=data, rate=speed_factor)
-
-
-# ---- Hàm trích xuất đặc trưng MFCC ----
-def extract_features(data, sr, n_mfcc=20):
-    mfcc = librosa.feature.mfcc(y=data, sr=sr, n_mfcc=n_mfcc)
-    return np.mean(mfcc.T, axis=0)
-
-# ---- Kiểm tra chất lượng âm thanh ----
-def check_audio_quality(audio, min_amplitude=0.1):
-    """Kiểm tra chất lượng âm thanh"""
-    if np.max(np.abs(audio)) < min_amplitude:
-        return False
-    return True
-
-# ---- Pipeline xử lý dữ liệu ----
-features, labels = [], []
-
-for label in os.listdir(DATASET_PATH):
-    class_dir = os.path.join(DATASET_PATH, label)
-    if not os.path.isdir(class_dir):
-        continue
-
-    print(f"🔍 Đang xử lý lớp: {label}")
-
-    for file in os.listdir(class_dir):
-        if not file.endswith(".wav"):
+# ==== Hàm xử lý từng tập ====
+def process_set(set_type):
+    X, y = [], []
+    set_dir = os.path.join(data_dir, set_type)
+    for label in os.listdir(set_dir):
+        label_dir = os.path.join(set_dir, label)
+        if not os.path.isdir(label_dir):
             continue
+        for file in os.listdir(label_dir):
+            file_path = os.path.join(label_dir, file)
+            try:
+                features = extract_features(file_path)
+                X.append(features)
+                y.append(label)
+            except Exception as e:
+                print("⚠️ Lỗi với file:", file_path, e)
+    return np.array(X), np.array(y)
 
-        file_path = os.path.join(class_dir, file)
+# ==== Trích xuất toàn bộ ====
+X_train, y_train = process_set("train")
+X_val, y_val     = process_set("val")
+X_test, y_test   = process_set("test")
 
-        try:
-            y, sr = librosa.load(file_path, sr=16000, mono=True)
+print("✅ Train:", X_train.shape, len(y_train))
+print("✅ Val:", X_val.shape, len(y_val))
+print("✅ Test:", X_test.shape, len(y_test))
 
-            # Kiểm tra chất lượng âm thanh
-            if not check_audio_quality(y):
-                print(f"⚠️ Âm thanh {file_path} có chất lượng kém, bỏ qua.")
-                continue
+# ==== Lưu ra file ====
+os.makedirs(save_dir, exist_ok=True)
 
-            # 1. Gốc
-            features.append(extract_features(y, sr))
-            labels.append(label)
+with open(os.path.join(save_dir, "features_3_train.pkl"), "wb") as f:
+    pickle.dump((X_train, y_train), f)
 
-            # 2. Nhiễu
-            y_noise = add_noise(y)
-            features.append(extract_features(y_noise, sr))
-            labels.append(label)
+with open(os.path.join(save_dir, "features_3_val.pkl"), "wb") as f:
+    pickle.dump((X_val, y_val), f)
 
-            # 3. Pitch shift
-            y_pitch = change_pitch(y, sr, n_steps=2)
-            features.append(extract_features(y_pitch, sr))
-            labels.append(label)
+with open(os.path.join(save_dir, "features_3_test.pkl"), "wb") as f:
+    pickle.dump((X_test, y_test), f)
 
-            # 4. Speed change
-            y_speed = change_speed(y, speed_factor=1.2)
-            features.append(extract_features(y_speed, sr))
-            labels.append(label)
-
-        except Exception as e:
-            print(f"Lỗi khi xử lý {file_path}: {e}")
-
-# ---- Chuẩn hóa dữ liệu ----
-scaler = StandardScaler()
-features_scaled = scaler.fit_transform(features)
-
-# ---- Chia tập train/test ----
-X_train, X_test, y_train, y_test = train_test_split(
-    features_scaled, labels, test_size=0.2, random_state=42
-)
-
-# ---- Lưu dữ liệu ra file numpy ----
-np.save(OUTPUT_FEATURES, np.array(features))
-np.save(OUTPUT_LABELS, np.array(labels))
-
-print(f"✅ Đã lưu đặc trưng vào {OUTPUT_FEATURES}, {OUTPUT_LABELS}")
+print("🎯 Đã lưu xong features_train.pkl, features_val.pkl, features_test.pkl")

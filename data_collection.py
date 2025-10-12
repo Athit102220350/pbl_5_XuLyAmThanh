@@ -3,6 +3,7 @@ import numpy as np
 import scipy.io.wavfile as wav
 import os
 import glob
+import time
 
 def record(filename, duration=2, fs=16000):
     """Ghi âm và lưu file WAV"""
@@ -11,10 +12,9 @@ def record(filename, duration=2, fs=16000):
     sd.wait()
     wav.write(filename, fs, audio)
     print("✅ Đã lưu:", filename)
+    return audio
 
-    return audio  # Trả về dữ liệu âm thanh để kiểm tra chất lượng
-
-labels = ["batDen", "tatDen", "batQuat", "tatQuat"]
+labels = ["batDen", "tatDen", "batQuat", "tatQuat", "tatTatCa", "batTatCa"]
 
 # Tạo thư mục cho từng nhãn
 for label in labels:
@@ -25,7 +25,6 @@ def next_filename(label, base="data"):
     folder = f"{base}/{label}"
     files = glob.glob(f"{folder}/sample*.wav")
 
-    # Lấy số thứ tự từ tên file
     indices = []
     for f in files:
         try:
@@ -34,7 +33,6 @@ def next_filename(label, base="data"):
         except:
             pass
 
-    # Nếu chưa có file thì bắt đầu từ 1
     next_index = max(indices) + 1 if indices else 1
     return f"{folder}/sample{next_index}.wav"
 
@@ -44,18 +42,20 @@ def check_audio_quality(audio, min_amplitude=0.1):
         return False
     return True
 
-def batch_record(label, num_samples=5):
-    """Thu thập nhiều mẫu liên tiếp"""
+def batch_record(label, num_samples=30, duration=2):
+    """Thu thập nhiều mẫu liên tục"""
+    print(f"=== Bắt đầu ghi {num_samples} mẫu cho nhãn '{label}' ===")
     for i in range(num_samples):
+        print(f"\n🎧 Mẫu {i+1}/{num_samples}")
         filename = next_filename(label)
         while True:
-            audio = record(filename)
+            audio = record(filename, duration=duration)
             if check_audio_quality(audio):
                 break
             print("⚠️ Âm lượng quá nhỏ, vui lòng thử lại")
+        time.sleep(0.5)  # nghỉ 0.5s giữa các mẫu (đỡ bị chồng âm)
+    print("✅ Hoàn tất ghi âm tất cả mẫu!")
 
 if __name__ == "__main__":
-    # Ví dụ: ghi âm cho nhãn "tatQuat"
-    label = "batQuat"   # đổi thành batDen / tatDen / batQuat / tatQuat khi cần
-    filename = next_filename(label)
-    record(filename)
+    label = "tatQuat"   # đổi label khi cần
+    batch_record(label)
