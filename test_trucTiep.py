@@ -6,9 +6,9 @@ import joblib
 
 # ==== B1: Load model ====
 model_dir = r"C:\Users\souva\OneDrive\Documents\DUT_PROJECT\PBL5-TEST\model"
-clf = joblib.load(f"{model_dir}/svm_model2.pkl")
-scaler = joblib.load(f"{model_dir}/scaler2.pkl")
-le = joblib.load(f"{model_dir}/label_encoder2.pkl")
+clf = joblib.load(f"{model_dir}/svm_model3.pkl")
+scaler = joblib.load(f"{model_dir}/scaler3.pkl")
+le = joblib.load(f"{model_dir}/label_encoder3.pkl")
 
 # ==== B2: Hàm trích MFCC ====
 SR = 16000

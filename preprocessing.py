@@ -9,7 +9,7 @@ save_dir = r"C:\Users\souva\OneDrive\Documents\DUT_PROJECT\PBL5-TEST\features"
 
 SR = 16000           # Tần số mẫu (Hz)
 N_MFCC = 13          # Số lượng MFCC
-MAX_DURATION = 3.0   # Thời lượng tối đa (giây) muốn chuẩn hóa
+MAX_DURATION = 5.0   # Thời lượng tối đa (giây) muốn chuẩn hóa
 MAX_LEN = int(SR * MAX_DURATION)  # Tổng số mẫu tương ứng
 
 # ==== Hàm chuẩn hóa độ dài + trích đặc trưng ====
