@@ -8,13 +8,13 @@ import joblib
 import matplotlib.pyplot as plt
 
 # ==== B1: Load đặc trưng đã trích xuất từ Bước 3 ====
-with open(r"features\features_3_train.pkl", "rb") as f:
+with open(r"features\features_train.pkl", "rb") as f:
     X_train, y_train = pickle.load(f)
 
-with open(r"features\features_3_val.pkl", "rb") as f:
+with open(r"features\features_val.pkl", "rb") as f:
     X_val, y_val = pickle.load(f)
 
-with open(r"features\features_3_test.pkl", "rb") as f:
+with open(r"features\features_test.pkl", "rb") as f:
     X_test, y_test = pickle.load(f)
 
 # Convert sang numpy

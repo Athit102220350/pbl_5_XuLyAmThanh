@@ -20,7 +20,7 @@ def extract_features(y, sr=SR):
     return mfcc
 
 # ==== B3: Ghi âm trực tiếp ====
-duration = 3 # giây
+duration = 2 # giây
 print("🎙️ Bắt đầu ghi âm...")
 recording = sd.rec(int(duration * SR), samplerate=SR, channels=1)
 sd.wait()
