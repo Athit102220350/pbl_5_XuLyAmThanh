@@ -1,6 +1,6 @@
 import os
 
-root_path = r"C:\Users\souva\OneDrive\Documents\DUT_PROJECT\PBL5-TEST\data"
+root_path = r"C:\Users\souva\OneDrive\Documents\DUT_PROJECT\PBL6-TEST\data"
 
 # Duyệt qua tất cả thư mục con
 for folder_name in os.listdir(root_path):

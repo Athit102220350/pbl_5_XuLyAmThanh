@@ -5,14 +5,14 @@ import numpy as np
 import joblib
 
 # ==== B1: Load model ====
-model_dir = r"C:\Users\souva\OneDrive\Documents\DUT_PROJECT\PBL5-TEST\model"
-clf = joblib.load(f"{model_dir}/svm_model3.pkl")
-scaler = joblib.load(f"{model_dir}/scaler3.pkl")
-le = joblib.load(f"{model_dir}/label_encoder3.pkl")
+model_dir = r"C:\Users\souva\OneDrive\Documents\DUT_PROJECT\PBL6-TEST\model"
+clf = joblib.load(f"{model_dir}/svm_model.pkl")
+scaler = joblib.load(f"{model_dir}/scaler.pkl")
+le = joblib.load(f"{model_dir}/label_encoder.pkl")
 
 # ==== B2: Hàm trích MFCC ====
 SR = 16000
-N_MFCC = 13     
+N_MFCC = 40     
 
 def extract_features(y, sr=SR):
     mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=N_MFCC)

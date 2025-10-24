@@ -5,11 +5,11 @@ import pickle
 import random
 
 # ==== Cấu hình ====
-data_dir = r"C:\Users\souva\OneDrive\Documents\DUT_PROJECT\PBL5-TEST\data_train"
-save_dir = r"C:\Users\souva\OneDrive\Documents\DUT_PROJECT\PBL5-TEST\features"
+data_dir = r"C:\Users\souva\OneDrive\Documents\DUT_PROJECT\PBL6-TEST\data_train"
+save_dir = r"C:\Users\souva\OneDrive\Documents\DUT_PROJECT\PBL6-TEST\features"
 
 SR = 16000
-N_MFCC = 13
+N_MFCC = 40
 
 # ==== Hàm trích đặc trưng + tăng cường dữ liệu ====
 def extract_features(file_path):
@@ -40,6 +40,19 @@ def extract_features(file_path):
     y_pitch = np.clip(y_pitch, -1.0, 1.0)
     mfcc_pitch = librosa.feature.mfcc(y=y_pitch, sr=sr, n_mfcc=N_MFCC)
     features.append(np.mean(mfcc_pitch.T, axis=0))
+
+    # 5️⃣ Dịch tín hiệu theo thời gian
+    shift = np.random.randint(-int(0.1*len(y)), int(0.1*len(y)))
+    y_shift = np.roll(y, shift)
+    mfcc_shift = librosa.feature.mfcc(y=y_shift, sr=sr, n_mfcc=N_MFCC)
+    features.append(np.mean(mfcc_shift.T, axis=0))
+
+    # 6️⃣ Thay đổi âm lượng
+    gain = random.uniform(0.8, 1.2)
+    y_gain = y * gain
+    y_gain = np.clip(y_gain, -1.0, 1.0)
+    mfcc_gain = librosa.feature.mfcc(y=y_gain, sr=sr, n_mfcc=N_MFCC)
+    features.append(np.mean(mfcc_gain.T, axis=0))
 
     return features
 

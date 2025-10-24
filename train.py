@@ -62,11 +62,11 @@ plt.title("Confusion Matrix - Test Set")
 plt.show()
 
 # ==== B8: Lưu model, scaler, encoder ====
-model_dir = r"C:\Users\souva\OneDrive\Documents\DUT_PROJECT\PBL5-TEST\model"
+model_dir = r"C:\Users\souva\OneDrive\Documents\DUT_PROJECT\PBL6-TEST\model"
 os.makedirs(model_dir, exist_ok=True)
 
-joblib.dump(clf, os.path.join(model_dir, "svm_model3.pkl"))
-joblib.dump(scaler, os.path.join(model_dir, "scaler3.pkl"))
-joblib.dump(le, os.path.join(model_dir, "label_encoder3.pkl"))
+joblib.dump(clf, os.path.join(model_dir, "svm_model.pkl"))
+joblib.dump(scaler, os.path.join(model_dir, "scaler.pkl"))
+joblib.dump(le, os.path.join(model_dir, "label_encoder.pkl"))
 
 print(f"\n✅ Đã lưu SVM model, scaler và encoder vào thư mục: {model_dir}")
